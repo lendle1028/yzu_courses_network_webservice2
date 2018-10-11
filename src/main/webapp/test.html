@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+    <head>
+        <title>TODO supply a title</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script src="https://code.jquery.com/jquery-2.2.4.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+        <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+        <link href="https://code.jquery.com/ui/1.12.1/themes/ui-lightness/jquery-ui.css" rel="stylesheet" type="text/css" />
+    </head>
+    <body>
+        <script>
+            var editing=null;
+            var loginList=null;
+            
+            function add(){
+                loginList.logins.push(editing.login);
+            }
+            
+            $(document).ready(function () {
+                editing=new Vue({
+                    "el":"#loginData",
+                    "data":{
+                        "login":{
+                            "id":"",
+                            "password":""
+                        }
+                    }
+                });
+                
+                
+                $.ajax("logins", {
+                    success: function (d) {
+                        loginList = new Vue({
+                            "el": "#app",
+                            "data": {
+                                "logins": d
+                            },
+                            "methods":{
+                                edit: function(d){
+                                    editing.login=d;
+                                },
+                                deleteLogin:function(index){
+                                    this.logins.splice(index, 1);
+                                }
+                            }
+                        });
+                    }
+                });
+            });
+
+        </script>
+        
+        <div id="loginData">
+            ID: <input type="text" v-model="login.id"/><br/>
+            Password: <input type="text" v-model="login.password"><br/>
+        </div>
+        <button onclick="add();">ADD</button>
+        <table border="1" id="app" widths="100%">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>PASSWORD</th>
+                    <th></th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr v-for="(login, index) in logins">
+                    <td> {{login.id}}</td>
+                    <td>{{login.password}}</td>
+                    <td><button v-on:click="edit(login);">EDIT</button></td>
+                    <td><button v-on:click="deleteLogin(index);">DELETE</button></td>
+                </tr>
+            </tbody>
+        </table>
+    </body>
+</html>
